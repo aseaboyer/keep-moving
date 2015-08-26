@@ -2,26 +2,38 @@
 
 <html lang="en">
 <head>
-  <meta charset="utf-8">
+    <meta charset="utf-8">
 
-  <title>The Littelist PVP Game</title>
-  <meta name="description" content="The HTML5 Herald">
-  <meta name="author" content="SitePoint">
+    <title>The Littelist PVP Game</title>
+    <meta name="description" content="The HTML5 Herald">
+    <meta name="author" content="SitePoint">
 
-  <link rel="stylesheet" href="css/styles.css?v=1.0">
+    <link href='http://fonts.googleapis.com/css?family=Oswald:400,700,300' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="css/styles.css">
 
-  <!--[if lt IE 9]>
-  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-  <![endif]-->
+    <!--[if lt IE 9]>
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
 </head>
 
 <body>
-    <section id="login">
-    
-    </section>
     <section id="gameWrapper">
-        <canvas id="game"></canvas>
+        <canvas id="game" height="500px" width="700px"></canvas>
     </section>
-    <script src="js/config.js"></script>
+    <section id="GUI">
+        <div id="fps"></div>
+    </section>
+    <section id="rosterWrapper">
+        <p>Name: <input id="setName"></p>
+        <h2>Roster</h2>
+        <ul id="roster"></ul>
+    </section>
+    <script src="js/Player.js"></script>
+    <script src="js/GameObject.js"></script>
+    <script src="js/Vector2.js"></script>
+    <script src="js/Time.js"></script>
+    <script src="js/Game.js"></script>
+    <script src="js/Match.js"></script>
+    <script src="js/run.js"></script>
 </body>
 </html>
