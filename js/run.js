@@ -13,14 +13,15 @@ function getKeys() {
     
     // open websockets to get other players
     
-    // add new player
-    
     // run game.init()
     GAME.init(game);
     
     // Wait for the modal, which asks for a name and should create a player and call run
+    // add new player
     var localPlayerID = GAME.createPlayer(document.getElementById("roster"));
     console.log(GAME.players[localPlayerID]);
+    GAME.players[localPlayerID].transform.position.set(canvas.width * 0.5, canvas.height * 0.5);
+    GAME.players[localPlayerID].color.set( "rgba(128,253,188, 0.7)", GAME.players[localPlayerID] );
     // Players can change name
     var nameInput = document.getElementById("setName");
     nameInput.value = GAME.players[localPlayerID].name.get();

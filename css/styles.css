@@ -46,6 +46,35 @@ canvas#game {
     top:0;
     width:100%;
 }
+#roster {
+    list-style-type:none;
+    margin:0;
+    padding-left:0;
+}
+#roster li {
+    height:40px;
+    position:relative;
+}
+#roster li span {
+    display:inline-block;
+    height:40px;
+}
+#roster li span.icon {
+    border-radius:50%;
+    color:transparent;
+    width:40px;
+    
+}
+#roster li span.name {
+    padding: 0 20px;
+    position:relative;
+    top:8px;
+}
+#roster li span.status {
+    color:#ccc;
+    position:relative;
+    top:8px;
+}
 
 input#setName {
     background-color:rgba(255,255,255, .1);
