@@ -3,7 +3,7 @@ function Game() {
         "players": [],
         "baseMoveSpeed": 1,
         "time": new Time(),
-        "paused": true,
+        "paused": false,
         "localPlayerID": 0,
         "init": function (g) {
             console.log("init");
@@ -14,15 +14,19 @@ function Game() {
             var thisPlayer = new Player(rosterEle);
             this.players.push(thisPlayer);
             thisPlayer.order = this.players.length - 1;
-            console.log(this.players);
             
             return thisPlayer.order;
         },
         "update": function (g, keys) {
             g.time.update();
             
+            //this.players[this.localPlayerID].
             
+            for (var x=0; x<this.players.length; x++) {
+                this.players[x].update (this.time.delta);
+            }
             
+            //console.log(keys);
         },
         "drawList": {
             list: [],

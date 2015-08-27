@@ -7,11 +7,8 @@ function Player(rosterList) {
     rosterItem = document.createElement("li");
     rosterItem.setAttribute("id", "player" + tempName);
     rosterItem.dataset.player = tempName;
-    rosterItem.innerHTML = "<span class='icon' data-player"+tempName+"-icon='normal'>icon</span><span class='name'>"+tempName+"</span><span class='status' data-player"+tempName+"-status='normal'>waiting</span>";
-    // create the icon
-    //var rosterIcon = document.createElement("span").classList.add("icon");
-    //create the status holder
-    //var rosterIcon = document.createElement("span").classList.add("status");
+    rosterItem.innerHTML = "<span class='icon' data-player" + tempName + "-icon='normal'>icon</span><span class='name'>" +
+        tempName + "</span><span class='status' data-player" + tempName + "-status='normal'>playing</span>";
     rosterList.appendChild(rosterItem);
     
     tumbleWeedImage = document.createElement("img");
@@ -26,14 +23,15 @@ function Player(rosterList) {
         "created": startTime,
         "color": {
             value: "rgba(128,188,253, 0.7)",
-            get: function() {
+            get: function () {
                 return this.value;
             },
             set: function (newColor, thisObj) {
+                var playerIcon, thisChildren;
+                
                 this.value = newColor;
-                var playerIcon = document.querySelectorAll('[data-player' + this.id + '-icon]');
-                console.log(thisObj);
-                var thisChildren = thisObj.name.rosterObject.getElementsByClassName("icon")[0].style.backgroundColor = this.get();
+                playerIcon = document.querySelectorAll('[data-player' + this.id + '-icon]');
+                thisChildren = thisObj.name.rosterObject.getElementsByClassName("icon")[0].style.backgroundColor = this.get();
             }
         },
         "playerIcon": tumbleWeedImage,
@@ -42,9 +40,15 @@ function Player(rosterList) {
             "get": function () {
                 return this.value;
             },
-            "set": function (newName) {
-                this.name = newName;
-                this.rosterObject.getElementsByClassName("name")[0].innerHTML = newName;
+            "set": function (newName, idCheck) {
+                if (newName !== this.name && newName !== "") {
+                    this.name = newName;
+                    if (newName !== idCheck) {
+                        newName += " (" + idCheck + ")";
+                    }
+
+                    this.rosterObject.getElementsByClassName("name")[0].innerHTML = newName;
+                }
             },
             "rosterObject": rosterItem
         },
@@ -53,7 +57,26 @@ function Player(rosterList) {
             "position": { // this is part of the GO later....I think
                 "x": 0,
                 "y": 0,
-                "velocity": new Vector2(),
+                "friction": {
+                    "base": 0.95,
+                    "current": 0.97,
+                    "get": function () {
+                        return this.current;
+                    },
+                    "set": function (newFriction) {
+                        this.current = newFriction;
+                    },
+                    "reset": function () {
+                        this.current = this.base;
+                    }
+                },
+                "velocity": {
+                    "max": {
+                        "x": 10,
+                        "y": 10
+                    },
+                    "current": new Vector2()
+                },
                 "get": function () {
                     return { "x" : this.x, "y" : this.y };
                 },
@@ -61,30 +84,90 @@ function Player(rosterList) {
                     this.x = nx;
                     this.y = ny;
                 },
-                "move": function (v2, speed) {
-
+                "move": function (v2, speed) { // don't hard code speed later
+                    this.velocity.current.x += v2.x * this.speed.current;
+                    if (this.velocity.current.x > this.velocity.max.x) {
+                        this.velocity.current.x = this.velocity.max.x;
+                    }
+                    if (this.velocity.current.x < -this.velocity.max.x) {
+                        this.velocity.current.x = -this.velocity.max.x;
+                    }
+                    
+                    this.velocity.current.y -= v2.y;
+                    if (this.velocity.current.y > this.velocity.max.y) {
+                        this.velocity.current.y = this.velocity.max.y;
+                    }
+                    if (this.velocity.current.y < -this.velocity.max.y) {
+                        this.velocity.current.y = -this.velocity.max.y;
+                    }
+                    
+                    this.x += this.velocity.current.x;
+                    this.velocity.current.x *= this.friction.get();
+                    this.y += this.velocity.current.y;
+                    this.velocity.current.y *= this.friction.get();
+                    
+                    // keep it in screen - DON'T HARDCODE LATER!
+                    if (this.x < 0) {
+                        this.x = 0;
+                    }
+                    if (this.y < 0) {
+                        this.y = 0;
+                    }
+                    if (this.x > 700) {
+                        this.x = 700;
+                    }
+                    if (this.y > 500) {
+                        this.y = 500;
+                    }
+                },
+                "speed": { // this whole section might be a bit toooo messy! - MOVE IT TO position.move, for ease
+                    "base": 1,
+                    "current": 0.6,
+                    "get": function () {
+                        return this.current;
+                    },
+                    "set": function (newSpeed) {
+                        this.speed = newSpeed;
+                    },
+                    "reset": function () {
+                        this.current = this.base;
+                    }
                 }
             },
             "rotation": {
                 "value": 0,
+                "speed": 1,
                 "rotate": function (rotVal) {
-                
+                    this.value += rotVal;
+                },
+                get: function () {
+                    return this.value;
                 }
             }
         },
         "active": true,
-        "update": function () {
+        "update": function (timeDelta) {
+            var normVelocity = this.transform.position.velocity.current.x + this.transform.position.velocity.current.y;
             
+            this.transform.rotation.rotate(timeDelta * normVelocity * this.transform.rotation.speed); // probably only rotate if the velocity isn't {0,0}
+            //console.log("Change: "+timeDelta);
         },
         "draw": function (context) {
-            console.log("draw player: " + this.name.get());
+            //console.log("draw player: " + this.name.get());
+            //move to position
+            context.save();
+            context.translate(this.transform.position.x, this.transform.position.y);
+            context.rotate(this.transform.rotation.get());
+            
             context.beginPath();
-            context.arc(this.transform.position.x, this.transform.position.y, this.playerIcon.width, 0, 2 * Math.PI, false);
+            context.arc(0, 0, this.playerIcon.width, 0, 2 * Math.PI, false);
             context.fillStyle = this.color.get();
             context.fill();
             
-            context.drawImage(this.playerIcon, this.transform.position.x - (this.playerIcon.width * 0.5),
-                              this.transform.position.y - (this.playerIcon.height * 0.5), this.playerIcon.width, this.playerIcon.height);
+            context.drawImage(this.playerIcon, -(this.playerIcon.width * 0.5),
+                              -(this.playerIcon.height * 0.5), this.playerIcon.width, this.playerIcon.height);
+            
+            context.restore();
         }
     };
     return obj;

@@ -1,4 +1,4 @@
-function Vector2() {
+function Vector2() { // pass an x/y or default each to 0
     var obj;
     
     obj = {
