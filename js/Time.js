@@ -13,12 +13,25 @@ function Time() {
             this.last = this.current;
             this.current = dateObj;
             this.delta = (this.current - this.last) * 0.001;
-            this.fps = 60/this.delta;
+            this.fps = 60 / this.delta;
+            this.frameCount += 1;
             
             var fpsEle = document.getElementById("fps");
             if (fpsEle !== undefined) {
-                fpsEle.innerHTML = parseInt(this.fps);
+                fpsEle.innerHTML = this.getFPS();
             }
+        },
+        "frameCount" : 0,
+        getFPS : function () {
+            var currentTime = (new Date().getTime() - this.start) / 1000;
+            var result = Math.floor((this.frameCount / currentTime));
+            
+            if (currentTime > 1) {
+                this.start = new Date().getTime();
+                this.frameCount = 0;
+            }
+            
+            return result;
         }
     };
 }

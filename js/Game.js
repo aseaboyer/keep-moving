@@ -8,7 +8,58 @@ function Game() {
         "init": function (g) {
             console.log("init");
             
+            //this.inventory.import( this.inventory.urls.hats, this.inventory.hats )
+            // skip this import for now, till the local server is set up
+            
             // get other players
+        },
+        "inventory": {
+            "import": function (url, obj) {
+                var itemList, itemCount;
+                var fetcher = new XMLHttpRequest();
+                
+                console.log("Opening: " + url);
+                fetcher.onreadystatechange=function() {
+                    if (fetcher.readyState==4 && fetcher.status==200) {
+                        console.log("Opened: " + url);
+                    }
+                }
+                fetcher.open("GET", url, true);
+                fetcher.send();
+                
+                obj = itemList;
+                
+                return itemCount;
+            },
+            "urls": {
+                "hats": "img/hats.png"
+            },
+            "hats": [
+                {
+                    "name": "Cowboy Hat",
+                    "x": 0,
+                    "y": 0,
+                    "width": 36,
+                    "height": 22,
+                    "url": "img/hats.png"
+                },
+                {
+                    "name": "Pink Bow",
+                    "x": 67,
+                    "y": 9,
+                    "width": 33,
+                    "height": 23,
+                    "url": "img/hats.png"
+                },
+                {
+                    "name": "'merica",
+                    "x": 122,
+                    "y": 11,
+                    "width": 38,
+                    "height": 21,
+                    "url": "img/hats.png"
+                }
+            ]
         },
         "createPlayer": function (rosterEle) {
             var thisPlayer = new Player(rosterEle);
@@ -45,7 +96,7 @@ function Game() {
             c.clearRect(0, 0, canvas.width, canvas.height); // reset canvas
             
             // foreach item, call it's draw
-            for (var x=0; x<this.players.length; x++) {
+            for (var x = 0; x < this.players.length; x++) {
                 this.players[x].draw(c);
             }
             

@@ -67,6 +67,7 @@ playerColors = ["rgba(128,253,188, 0.7)"];
     //console.log(GAME.players[localPlayerID]);
     GAME.players[localPlayerID].transform.position.set(canvas.width * 0.5, canvas.height * 0.5);
     GAME.players[localPlayerID].color.set(playerColors[0], GAME.players[localPlayerID]);
+    GAME.players[localPlayerID].wardrobe.equip("hat", GAME.inventory.hats[2]);
     // Players can change name
     var nameInput = document.getElementById("setName");
     nameInput.value = GAME.players[localPlayerID].name.get();

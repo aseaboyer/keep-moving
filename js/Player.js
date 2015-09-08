@@ -12,7 +12,7 @@ function Player(rosterList) {
     rosterList.appendChild(rosterItem);
     
     tumbleWeedImage = document.createElement("img");
-    tumbleWeedImage.src = "img/tumbleweed_icon.png";
+    tumbleWeedImage.src = "img/tumbleweed.png";
     tumbleWeedImage.width = 50;
     tumbleWeedImage.height = 50;
     
@@ -57,6 +57,10 @@ function Player(rosterList) {
             "position": { // this is part of the GO later....I think
                 "x": 0,
                 "y": 0,
+                "last": { // return them to hear if they end up in a bad place
+                    "x": 0,
+                    "y": 0
+                },
                 "friction": {
                     "base": 0.95,
                     "current": 0.97,
@@ -85,6 +89,10 @@ function Player(rosterList) {
                     this.y = ny;
                 },
                 "move": function (v2, speed) { // don't hard code speed later
+                    // store current
+                    this.last.x = this.x;
+                    this.last.y = this.y;
+                    
                     this.velocity.current.x += v2.x * this.speed.current;
                     if (this.velocity.current.x > this.velocity.max.x) {
                         this.velocity.current.x = this.velocity.max.x;
@@ -109,15 +117,19 @@ function Player(rosterList) {
                     // keep it in screen - DON'T HARDCODE LATER!
                     if (this.x < 0) {
                         this.x = 0;
+                        this.velocity.current.flipX();
                     }
                     if (this.y < 0) {
                         this.y = 0;
+                        this.velocity.current.flipY();
                     }
                     if (this.x > 700) {
                         this.x = 700;
+                        this.velocity.current.flipX();
                     }
                     if (this.y > 500) {
                         this.y = 500;
+                        this.velocity.current.flipY();
                     }
                 },
                 "speed": { // this whole section might be a bit toooo messy! - MOVE IT TO position.move, for ease
@@ -152,22 +164,73 @@ function Player(rosterList) {
             this.transform.rotation.rotate(timeDelta * normVelocity * this.transform.rotation.speed); // probably only rotate if the velocity isn't {0,0}
             //console.log("Change: "+timeDelta);
         },
+        "wardrobe": {
+            "hat": false,
+            "equip": function (slot, item) {
+                if(typeof item !== undefined) {
+                    item.img = document.createElement("img");
+                    item.img.src = item.url;
+                    
+                    this[slot] = item;
+                    console.log("Created:");
+                    console.log(item);
+                } else {
+                    this.unequip(slot);
+                }
+            },
+            "unequip": function (slot) {
+                this[slot] = false;
+            }
+        },
         "draw": function (context) {
             //console.log("draw player: " + this.name.get());
             //move to position
+            
+            // Draw player color
             context.save();
             context.translate(this.transform.position.x, this.transform.position.y);
             context.rotate(this.transform.rotation.get());
-            
             context.beginPath();
-            context.arc(0, 0, this.playerIcon.width, 0, 2 * Math.PI, false);
+            context.arc(0, 0, this.playerIcon.width * 0.53, 0, 2 * Math.PI, false);
             context.fillStyle = this.color.get();
             context.fill();
+            context.restore();
             
+            // Draw shadow
+            context.save();
+            context.translate(this.transform.position.x, this.transform.position.y);
+            context.scale(2,0.4);
+            context.beginPath();
+            context.arc(0, this.playerIcon.height * 1, this.playerIcon.width * 0.2, 0, 2 * Math.PI, false);
+            context.fillStyle =  "rgba(0,0,0, 0.3)";
+            context.fill();
+            context.restore();
+            
+            // Draw tumbleweed
+            context.save();
+            context.translate(this.transform.position.x, this.transform.position.y);
+            context.rotate(this.transform.rotation.get());
             context.drawImage(this.playerIcon, -(this.playerIcon.width * 0.5),
                               -(this.playerIcon.height * 0.5), this.playerIcon.width, this.playerIcon.height);
-            
             context.restore();
+            
+            // Draw hat
+            if (typeof this.wardrobe.hat !== undefined && this.wardrobe.hat !== false) {
+                //console.log("Wearing hat: " + this.wardrobe.hat.name);
+                context.save();
+                context.translate(this.transform.position.x, this.transform.position.y - (this.playerIcon.height * 0.3));
+                context.drawImage(this.wardrobe.hat.img, 
+                                this.wardrobe.hat.x,
+                                this.wardrobe.hat.y,
+                                this.wardrobe.hat.width,
+                                this.wardrobe.hat.height,
+                                -(this.wardrobe.hat.width * 0.4),
+                                -(this.wardrobe.hat.height * 0.2),
+                                this.wardrobe.hat.width,
+                                this.wardrobe.hat.height);
+                context.restore();
+            }
+            
         }
     };
     return obj;
