@@ -117,19 +117,19 @@ function Player(rosterList) {
                     // keep it in screen - DON'T HARDCODE LATER!
                     if (this.x < 0) {
                         this.x = 0;
-                        this.velocity.current.flipX();
+                        this.velocity.current.bounceX();
                     }
                     if (this.y < 0) {
                         this.y = 0;
-                        this.velocity.current.flipY();
+                        this.velocity.current.bounceY();
                     }
                     if (this.x > 700) {
                         this.x = 700;
-                        this.velocity.current.flipX();
+                        this.velocity.current.bounceX();
                     }
                     if (this.y > 500) {
                         this.y = 500;
-                        this.velocity.current.flipY();
+                        this.velocity.current.bounceY();
                     }
                 },
                 "speed": { // this whole section might be a bit toooo messy! - MOVE IT TO position.move, for ease
@@ -165,21 +165,49 @@ function Player(rosterList) {
             //console.log("Change: "+timeDelta);
         },
         "wardrobe": {
-            "hat": false,
+            "equiped": {
+                "hats": false
+            },
+            "pack": [],
             "equip": function (slot, item) {
+                //console.log( item );
                 if(typeof item !== undefined) {
                     item.img = document.createElement("img");
                     item.img.src = item.url;
                     
-                    this[slot] = item;
-                    console.log("Created:");
-                    console.log(item);
+                    this.equiped[slot] = item;
+                    //console.log("equiped:");
+                    //console.log(this.equiped);
                 } else {
                     this.unequip(slot);
                 }
             },
             "unequip": function (slot) {
-                this[slot] = false;
+                this.equiped[slot] = false;
+            },
+            "addItem": function (slot, item) {
+                item.type = slot;
+                this.pack.push(item);
+                
+                var invList = document.getElementById(slot + "-select");
+                
+                var newListItem = document.createElement("option");
+                    newListItem.setAttribute("value", item.id);
+                    newListItem.dataset.name = item.name;
+                    newListItem.innerHTML = item.name;
+                invList.appendChild(newListItem);
+                sortDropdownList(invList);
+                
+                // After sorting, select the equiped item
+                var selectOption = "false";
+                if(this.equiped[slot] != false) {
+                    selectOption = this.equiped[slot].id;
+                }
+                for (var x = 0; x < invList.options.length; x++ ) {
+                    if(invList.options[x].value == selectOption) {
+                        invList.options[x].selected = true;
+                    }
+                }
             }
         },
         "draw": function (context) {
@@ -199,9 +227,9 @@ function Player(rosterList) {
             // Draw shadow
             context.save();
             context.translate(this.transform.position.x, this.transform.position.y);
-            context.scale(2,0.4);
+            context.scale(2, 0.4);
             context.beginPath();
-            context.arc(0, this.playerIcon.height * 1, this.playerIcon.width * 0.2, 0, 2 * Math.PI, false);
+            context.arc(0, this.playerIcon.height, this.playerIcon.width * 0.2, 0, 2 * Math.PI, false);
             context.fillStyle =  "rgba(0,0,0, 0.3)";
             context.fill();
             context.restore();
@@ -215,19 +243,15 @@ function Player(rosterList) {
             context.restore();
             
             // Draw hat
-            if (typeof this.wardrobe.hat !== undefined && this.wardrobe.hat !== false) {
+            var hat = this.wardrobe.equiped.hats;
+            if (typeof hat !== undefined && hat !== false) {
                 //console.log("Wearing hat: " + this.wardrobe.hat.name);
                 context.save();
                 context.translate(this.transform.position.x, this.transform.position.y - (this.playerIcon.height * 0.3));
-                context.drawImage(this.wardrobe.hat.img, 
-                                this.wardrobe.hat.x,
-                                this.wardrobe.hat.y,
-                                this.wardrobe.hat.width,
-                                this.wardrobe.hat.height,
-                                -(this.wardrobe.hat.width * 0.4),
-                                -(this.wardrobe.hat.height * 0.2),
-                                this.wardrobe.hat.width,
-                                this.wardrobe.hat.height);
+                context.drawImage(hat.img,
+                                hat.x, hat.y, hat.width, hat.height,
+                                -(hat.width * 0.4), -(hat.height * 0.2),
+                                hat.width, hat.height);
                 context.restore();
             }
             

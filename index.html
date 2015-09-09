@@ -25,6 +25,13 @@
     </section>
     <section id="rosterWrapper">
         <p>Name: <input id="setName"></p>
+        <div id="loadout">
+            <p>Wearing:
+                <select name="hats" class="inv" id="hats-select" data-inv-slot="hats">
+                    <option value="false" data-name="">none</option>
+                </select>
+            </p>
+        </div>
         <h2>Roster</h2>
         <ul id="roster"></ul>
     </section>
@@ -34,6 +41,9 @@
     <script src="js/Time.js"></script>
     <script src="js/Game.js"></script>
     <script src="js/Match.js"></script>
+    
+    <script src="js/lib.js"></script>
+    
     <script src="js/run.js"></script>
 </body>
 </html>

@@ -67,7 +67,9 @@ playerColors = ["rgba(128,253,188, 0.7)"];
     //console.log(GAME.players[localPlayerID]);
     GAME.players[localPlayerID].transform.position.set(canvas.width * 0.5, canvas.height * 0.5);
     GAME.players[localPlayerID].color.set(playerColors[0], GAME.players[localPlayerID]);
-    GAME.players[localPlayerID].wardrobe.equip("hat", GAME.inventory.hats[2]);
+    GAME.players[localPlayerID].wardrobe.addItem("hats", GAME.inventory.hats[0]);
+    GAME.players[localPlayerID].wardrobe.addItem("hats", GAME.inventory.hats[1]);
+    GAME.players[localPlayerID].wardrobe.addItem("hats", GAME.inventory.hats[2]);
     // Players can change name
     var nameInput = document.getElementById("setName");
     nameInput.value = GAME.players[localPlayerID].name.get();
@@ -75,6 +77,23 @@ playerColors = ["rgba(128,253,188, 0.7)"];
         GAME.players[localPlayerID].name.set(e.target.value, GAME.players[localPlayerID].id);
     });
     
+    var loadOut,invSelects;
+    loadOut = document.getElementById("loadout");
+    invSelects = loadOut.getElementsByClassName("inv");
+    for (var x = 0; x < invSelects.length; x++) {
+        //console.log(invSelects[x].dataset.invSlot);
+        var slotNamePassed = invSelects[x].dataset.invSlot;
+        invSelects[x].addEventListener("change", function (e) {
+            var itemNum = e.target.value,
+                slotName = slotNamePassed;
+            if( e.target.value != 'false') {
+                var itemObj = GAME.inventory.lookup(slotName, itemNum);
+                GAME.players[localPlayerID].wardrobe.equip(slotName, itemObj);
+            } else {
+                GAME.players[localPlayerID].wardrobe.unequip(slotName);
+            }
+        });
+    }
     
     function run() {
         window.requestAnimationFrame(run);

@@ -34,8 +34,18 @@ function Game() {
             "urls": {
                 "hats": "img/hats.png"
             },
+            "lookup": function (slot, idNum) {
+                var items = this[slot];
+                for (var x = 0; x < items.length; x++) {
+                    if (items[x].id == idNum) {
+                        return items[x];
+                    }
+                }
+                return undefined;
+            },
             "hats": [
                 {
+                    "id": 0,
                     "name": "Cowboy Hat",
                     "x": 0,
                     "y": 0,
@@ -44,6 +54,7 @@ function Game() {
                     "url": "img/hats.png"
                 },
                 {
+                    "id": 1,
                     "name": "Pink Bow",
                     "x": 67,
                     "y": 9,
@@ -52,7 +63,8 @@ function Game() {
                     "url": "img/hats.png"
                 },
                 {
-                    "name": "'merica",
+                    "id": 2,
+                    "name": "'merica!",
                     "x": 122,
                     "y": 11,
                     "width": 38,
