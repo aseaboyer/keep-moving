@@ -51,7 +51,9 @@ function Game() {
                     "y": 0,
                     "width": 36,
                     "height": 22,
-                    "url": "img/hats.png"
+                    "url": "img/hats.png",
+                    "type": "hats",
+                    "desc": "A cowboy's best friend."
                 },
                 {
                     "id": 1,
@@ -60,7 +62,9 @@ function Game() {
                     "y": 9,
                     "width": 33,
                     "height": 23,
-                    "url": "img/hats.png"
+                    "url": "img/hats.png",
+                    "type": "hats",
+                    "desc": "Go ahead, look pretty."
                 },
                 {
                     "id": 2,
@@ -69,7 +73,9 @@ function Game() {
                     "y": 11,
                     "width": 38,
                     "height": 21,
-                    "url": "img/hats.png"
+                    "url": "img/hats.png",
+                    "type": "hats",
+                    "desc": "USA! USA!"
                 }
             ]
         },

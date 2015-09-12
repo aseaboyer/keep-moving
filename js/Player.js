@@ -1,14 +1,34 @@
 function Player(rosterList) {
-    var obj, tempName, startTime, rosterItem, tumbleWeedImage;
-    tempName = parseInt((Math.random() * 100000000), 10); // useful as a uid
+    var obj, tempID, tempName, startTime, rosterItem, tumbleWeedImage, localPlayer;
+    
+    
+    // Check localStorage
+    localPlayer = getLocalPlayer();
+    if(localPlayer !== null && localPlayer !== 'null' ) {
+        console.log( 'cool, load player' );
+        console.log( localPlayer );
+        tempID = localPlayer.id;
+        tempName = localPlayer.name;
+        console.log( tempID );
+        
+    } else {
+        console.log( 'create new player, non stored' );
+        tempID = parseInt((Math.random() * 100000000), 10); // useful as a uid
+        localPlayer = {}
+        localPlayer.id = tempID;
+        localPlayer.name = tempID;
+        tempName = tempID;
+        setLocalPlayer( localPlayer );
+    }
+    
     startTime = Date.now();
     
     // create the li for the roster
     rosterItem = document.createElement("li");
-    rosterItem.setAttribute("id", "player" + tempName);
-    rosterItem.dataset.player = tempName;
-    rosterItem.innerHTML = "<span class='icon' data-player" + tempName + "-icon='normal'>icon</span><span class='name'>" +
-        tempName + "</span><span class='status' data-player" + tempName + "-status='normal'>playing</span>";
+    rosterItem.setAttribute("id", "player" + tempID);
+    rosterItem.dataset.player = tempID;
+    rosterItem.innerHTML = "<span class='icon' data-player" + tempID + "-icon='normal'>icon</span><span class='name'>" +
+        tempName + "</span><span class='status' data-player" + tempID + "-status='normal'>playing</span>";
     rosterList.appendChild(rosterItem);
     
     tumbleWeedImage = document.createElement("img");
@@ -17,7 +37,7 @@ function Player(rosterList) {
     tumbleWeedImage.height = 50;
     
     obj = {
-        "id": tempName,
+        "id": tempID,
         "order": 0,
         "playing": false,
         "created": startTime,
@@ -27,11 +47,11 @@ function Player(rosterList) {
                 return this.value;
             },
             set: function (newColor, thisObj) {
-                var playerIcon, thisChildren;
+                var playerIcon;
                 
                 this.value = newColor;
                 playerIcon = document.querySelectorAll('[data-player' + this.id + '-icon]');
-                thisChildren = thisObj.name.rosterObject.getElementsByClassName("icon")[0].style.backgroundColor = this.get();
+                thisObj.name.rosterObject.getElementsByClassName("icon")[0].style.backgroundColor = this.get();
             }
         },
         "playerIcon": tumbleWeedImage,
@@ -48,6 +68,10 @@ function Player(rosterList) {
                     }
 
                     this.rosterObject.getElementsByClassName("name")[0].innerHTML = newName;
+                    
+                    var stored = getLocalPlayer();
+                    stored.name = this.name;
+                    setLocalPlayer(stored);
                 }
             },
             "rosterObject": rosterItem
@@ -170,6 +194,7 @@ function Player(rosterList) {
             },
             "pack": [],
             "equip": function (slot, item) {
+                //console.log( slot );
                 //console.log( item );
                 if(typeof item !== undefined) {
                     item.img = document.createElement("img");
@@ -181,11 +206,23 @@ function Player(rosterList) {
                 } else {
                     this.unequip(slot);
                 }
+                
+                var stored = getLocalPlayer();
+                if( !stored.hasOwnProperty('equiped') ) {
+                    stored.equiped = {}
+                }
+                stored.equiped[slot] = item;
+                setLocalPlayer(stored);
+                console.log(stored);
+                
+                // select the ui element in case it wasn't selected itself
+                var selectItem = document.querySelector("select[data-inv-slot='" + slot + "'] option[value='" + item.id + "']");
+                selectItem.selected = 'selected';
             },
             "unequip": function (slot) {
                 this.equiped[slot] = false;
             },
-            "addItem": function (slot, item) {
+            "addItem": function (slot, item) { // prevent item duplication!
                 item.type = slot;
                 this.pack.push(item);
                 
@@ -208,6 +245,10 @@ function Player(rosterList) {
                         invList.options[x].selected = true;
                     }
                 }
+                
+                var stored = getLocalPlayer();
+                stored.pack = this.pack;
+                setLocalPlayer(stored);
             }
         },
         "draw": function (context) {
@@ -257,5 +298,25 @@ function Player(rosterList) {
             
         }
     };
+    
+    // set saved name, add items to the pack, and equip items
+    if(localPlayer !== null && localPlayer !== 'null' ) {
+        console.log("DEV: AFTER THE OBJECT IS SET, BEFORE IT's RETURNED -> ");
+        obj.name.set (localPlayer.name, localPlayer.id);
+        if(typeof localPlayer.pack !== "undefined") {
+            for(var x = 0; x < localPlayer.pack.length; x++) {
+                obj.wardrobe.addItem(localPlayer.pack[x].type, localPlayer.pack[x]);
+            }
+        }
+        console.log(localPlayer.equiped);
+        if(typeof localPlayer.equiped !== "undefined") {
+                console.log(localPlayer.equiped);
+            for (var itemSlot in localPlayer.equiped) {
+                console.log( localPlayer.equiped[itemSlot].name );
+                obj.wardrobe.equip(localPlayer.equiped[itemSlot].type, localPlayer.equiped[itemSlot]);
+            }
+        }
+    }
+    
     return obj;
 }

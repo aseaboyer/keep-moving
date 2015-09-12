@@ -11,3 +11,15 @@ function sortDropdownList(ddl){
     }  
 
 }
+function getLocalPlayer () {
+    var localPlayer = localStorage.getItem('playerData');
+    if(localPlayer !== null && localPlayer !== 'null' ) {
+        return JSON.parse(localPlayer);
+    }
+    
+    return null;
+}
+
+function setLocalPlayer (rawData) {
+    localStorage.setItem('playerData', JSON.stringify(rawData));
+}
